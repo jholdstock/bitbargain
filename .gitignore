@@ -1,3 +1,8 @@
+archive data/
+*.csv
+config.rb
+*.png
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
