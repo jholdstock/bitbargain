@@ -7,7 +7,7 @@ end
 
 def concatenateFiles accountName
 	fileName = "#{accountName}-concat.csv"
-	print "Writing #{fileName}... "
+	print "Writing '#{fileName}'... "
 	File.open("#{@downloadLocation}/#{fileName}", "w") do |csv|
 		headingsAdded = false
 		Dir["#{@downloadLocation}/*_*.csv"].each do |fileName|
@@ -19,4 +19,25 @@ def concatenateFiles accountName
 		end
 	end
 	puts "done"
+end
+
+def load_csv fileName
+	file = CSV.read(fileName)
+	
+	#Remove headings
+	file.delete_at 0
+
+	return file
+end
+
+def getMostRecentDate
+	previous = load_csv("final output.csv")
+
+	oldest = Date.strptime("01/01/1980", "%d/%m/%Y")
+	previous.each do |row|
+		date = Date.strptime(row[0], "%d/%m/%Y")
+		oldest = date if date > oldest
+	end
+	puts "Already downloaded up to #{oldest}"
+	return oldest
 end

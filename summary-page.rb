@@ -1,4 +1,5 @@
 def login
+	@driver.get "https://online.lloydsbank.co.uk/personal/logon/login.jsp"
 	print "Entering user ID and password... "  
 	@driver.find_element(:id => "frmLogin:strCustomerLogin_userID").send_keys @userId
 	@driver.find_element(:id => "frmLogin:strCustomerLogin_pwd").send_keys @passwd
@@ -19,7 +20,7 @@ def enterMemorableInfo
 end
 
 def openAccount index
-	@driver.get "https://secure.lloydsbank.co.uk/personal/a/account_overview_personal/"
+	click "ifCommercial:ifCustomerBar:outputLinkNavHome"
 	account = @driver.find_element :id => "lnkAccName_des-m-sat-xx-#{index}"
 	accountName = account.text
 	print "Opening account '#{accountName}'... "
@@ -29,9 +30,10 @@ def openAccount index
 end
 
 def downloadMonth month, year
-	month = "%02d" % month
+	month = ("%02d" % month).to_s
+	year = year.to_s
 
-	print "Downloading #{month}-#{year} for account #{@accountName}... "
+	print "Downloading #{month}-#{year} for account '#{@accountName}'... "
 
 	@driver.get "https://secure.lloydsbank.co.uk/personal/a/viewproductdetails/ress/m44_exportstatement_fallback.jsp"
 
@@ -49,7 +51,8 @@ end
 def enterDate element, day, month, year
 	el = @driver.find_element(:id => element)
 	el.send_keys
-	el.send_keys(day.to_s)
-	el.send_keys(month.to_s)
-	el.send_keys(year.to_s)
+	el.send_keys(day)
+	el.send_keys(month)
+	el.send_keys(year)
+	raise "Input failed!" if el.attribute("value") != "#{day}/#{month}/#{year}"
 end

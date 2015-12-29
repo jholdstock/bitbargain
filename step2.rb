@@ -1,12 +1,10 @@
 require 'pp'
 require 'CSV'
 
-current = CSV.read("concat-current - pristine.csv")
-savings = CSV.read("concat-savings - pristine.csv")
+require './files.rb'
 
-#Remove headings
-current.delete_at 0
-savings.delete_at 0
+current = load_csv("concat-current - pristine.csv")
+savings = load_csv("concat-savings - pristine.csv")
 
 #Calculate net totals
 netTotals = []

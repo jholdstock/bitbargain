@@ -1,5 +1,6 @@
 require 'selenium-webdriver'
 require 'pp'
+require 'CSV'
 
 require "./config.rb"
 require "./driver.rb"
@@ -7,9 +8,13 @@ require "./files.rb"
 require "./summary-page.rb"
 
 begin
+	m = (getMostRecentDate..Date.today).map{|d| [d.year, d.month]}.uniq
+	m.shift
+	m = m.reverse
+	m.shift
+
 	cleanupFiles :concat_included => true
-	@driver.get "https://online.lloydsbank.co.uk/personal/logon/login.jsp"
-	
+
 	login
 	enterMemorableInfo
 
@@ -18,9 +23,9 @@ begin
 
 		cleanupFiles :concat_included => false
 
-		downloadMonth 9 , 2015
-		downloadMonth 10 , 2015
-		downloadMonth 11 , 2015
+		m.reverse.each do |my|
+			downloadMonth my[1], my[0]
+		end
 
 		concatenateFiles @accountName
 		cleanupFiles :concat_included => false
