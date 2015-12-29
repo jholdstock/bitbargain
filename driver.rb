@@ -6,8 +6,9 @@
 # }
 
 # @driver = Selenium::WebDriver.for :chrome, :prefs => prefs
-
-@driver = Selenium::WebDriver.for :chrome
+def createDriver
+	@driver = Selenium::WebDriver.for :chrome
+end
 
 def setSelected selectId, value
 	select = Selenium::WebDriver::Support::Select.new @driver.find_element(:id => selectId)

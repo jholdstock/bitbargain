@@ -13,7 +13,14 @@ begin
 	m = m.reverse
 	m.shift
 
+	if m.length == 0
+		puts "No complete months to download"
+		raise "nothing"
+	end
+
 	cleanupFiles :concat_included => true
+
+	createDriver
 
 	login
 	enterMemorableInfo
@@ -30,7 +37,8 @@ begin
 		concatenateFiles @accountName
 		cleanupFiles :concat_included => false
 	end
-rescue Exception => e  
+rescue Exception => e 
+	exit if e.message=="nothing"
 	puts "\n\nERROR!!! ERROR!!! ERROR!!!\n\n"
 	puts e.message
 	e.backtrace.each do |w|; puts w; end;
