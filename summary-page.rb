@@ -29,7 +29,15 @@ def openAccount index
 	accountName
 end
 
+COMMON_YEAR_DAYS_IN_MONTH = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+def days_in_month(month, year = Time.now.year)
+   return 29 if month == 2 && Date.gregorian_leap?(year)
+   COMMON_YEAR_DAYS_IN_MONTH[month]
+end
+
 def downloadMonth month, year
+	daysInMonth = days_in_month(month).to_s
 	month = ("%02d" % month).to_s
 	year = year.to_s
 
@@ -40,7 +48,7 @@ def downloadMonth month, year
 	@driver.find_element(:css => '.calendar-date-range-container label').click
 
 	enterDate 'export-date-range-from', "01", month, year
-	enterDate 'export-date-range-to', "31", month, year
+	enterDate 'export-date-range-to', daysInMonth, month, year
 
 	setSelected "export-format", "Internet banking text/spreadsheet (.CSV)"
 	click "export-statement-form:btnQuickTransferRetail"
