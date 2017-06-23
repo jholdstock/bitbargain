@@ -115,16 +115,26 @@ def checkCheapest
 	end
 
 	puts ""
+	cheapest = 0
+	cheap_sellers = []
 	rowData.each do |data|
+		cheapest = data[:unit] if cheapest == 0
+		cheap_sellers.push(data[:seller].downcase) if cheapest == data[:unit]
 		puts "#{data[:unit].gsub(" ","")} - #{data[:seller]}"
 	end
 
 	puts ""
 
-	if rowData[0][:seller].downcase == @bitbargain_username.downcase
-		puts "You are the cheapest!".green
+	cheap_sellers.uniq!
+
+	if cheap_sellers.include? @bitbargain_username.downcase
+		if cheap_sellers.size == 1
+			puts "You are the cheapest!".white.on_green
+		else
+			puts "You are joint cheapest".white.on_yellow
+		end
 	else
-		puts "You are not the cheapest!".red
+		puts "You are not the cheapest!".white.on_red
 	end
 
 	puts ""
