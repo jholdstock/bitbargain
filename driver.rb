@@ -1,11 +1,3 @@
-# prefs = {
-#   :download => {
-#      :prompt_for_download => "false", 
-#     :default_directory => @downloadLocation
-#   }
-# }
-
-# @driver = Selenium::WebDriver.for :chrome, :prefs => prefs
 def createDriver
 	@driver = Selenium::WebDriver.for :chrome
 end

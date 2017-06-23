@@ -1,47 +1,65 @@
 require 'selenium-webdriver'
 require 'pp'
-require 'CSV'
 
 require "./config.rb"
 require "./driver.rb"
-require "./files.rb"
 require "./summary-page.rb"
 
-begin
-	m = (getMostRecentDate..Date.today).map{|d| [d.year, d.month]}.uniq
-	m.shift
-	m = m.reverse
-	m.shift
+def getRowsOnScreen
+	table = @driver.find_element :css => "tbody.cwa-tbody"
+	rows = table.find_elements :css => "tr"
 
-	if m.length == 0
-		puts "No complete months to download"
-		raise "nothing"
+	rowVals = []
+	skip = true
+	rows.each do |row|
+		rowElements = row.find_elements :css => "td"
+		rowContent = {}
+		begin
+			rowContent = {
+				:date => rowElements[0].text,
+				:name => rowElements[1].text,
+				:xfer_type => rowElements[2].text,
+				:money_in => rowElements[3].text,
+				:money_out => rowElements[4].text,
+				:balance => rowElements[5].text,
+			}
+			
+		rescue Exception => e
+			next
+		end
+		rowVals.push rowContent
 	end
 
-	cleanupFiles :concat_included => true
+	return rowVals.reverse
+end
 
+begin
 	createDriver
-
 	login
 	enterMemorableInfo
+	openAccount 1
+	
+	rowVals = getRowsOnScreen
 
-	[1,3,4].each do |i|
-		@accountName = openAccount i
-
-		cleanupFiles :concat_included => false
-
-		m.reverse.each do |my|
-			downloadMonth my[1], my[0]
-		end
-
-		concatenateFiles @accountName
-		cleanupFiles :concat_included => false
+	`clear`
+	rowVals.each do |row|
+		puts "Received  #{row[:money_in].ljust(8," ")}  from  '#{row[:name]}'"
 	end
-rescue Exception => e 
-	exit if e.message=="nothing"
-	puts "\n\nERROR!!! ERROR!!! ERROR!!!\n\n"
-	puts e.message
-	e.backtrace.each do |w|; puts w; end;
+
+	@driver.find_elements(:css=>"a.back-to-accounts-btn").click
+	openAccount 1
+
+	rowVals = getRowsOnScreen
+	
+	`clear`
+	rowVals.each do |row|
+		puts "Received  #{row[:money_in].ljust(8," ")}  from  '#{row[:name]}'"
+	end
+	
+# rescue Exception => e 
+# 	puts "\n\nERROR!!! ERROR!!! ERROR!!!\n\n"
+# 	puts e.message
+# 	e.backtrace.each do |w|; puts w; end;
 ensure
-	@driver.quit if @driver != nil
+	#@driver.quit if @driver != nil
 end

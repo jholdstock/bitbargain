@@ -3,7 +3,7 @@ def login
 	print "Entering user ID and password... "  
 	@driver.find_element(:id => "frmLogin:strCustomerLogin_userID").send_keys @userId
 	@driver.find_element(:id => "frmLogin:strCustomerLogin_pwd").send_keys @passwd
-	click "frmLogin:btnLogin1"
+	click "frmLogin:btnLogin2"
 	puts "done"
 end
 
@@ -20,47 +20,10 @@ def enterMemorableInfo
 end
 
 def openAccount index
-	click "ifCommercial:ifCustomerBar:outputLinkNavHome"
 	account = @driver.find_element :id => "lnkAccName_des-m-sat-xx-#{index}"
 	accountName = account.text
 	print "Opening account '#{accountName}'... "
 	click "lnkAccName_des-m-sat-xx-#{index}"
 	puts "done"
 	accountName
-end
-
-COMMON_YEAR_DAYS_IN_MONTH = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-
-def days_in_month(month, year = Time.now.year)
-   return 29 if month == 2 && Date.gregorian_leap?(year)
-   COMMON_YEAR_DAYS_IN_MONTH[month]
-end
-
-def downloadMonth month, year
-	daysInMonth = days_in_month(month).to_s
-	month = ("%02d" % month).to_s
-	year = year.to_s
-
-	print "Downloading #{month}-#{year} for account '#{@accountName}'... "
-
-	@driver.get "https://secure.lloydsbank.co.uk/personal/a/viewproductdetails/ress/m44_exportstatement_fallback.jsp"
-
-	@driver.find_element(:css => '.calendar-date-range-container label').click
-
-	enterDate 'export-date-range-from', "01", month, year
-	enterDate 'export-date-range-to', daysInMonth, month, year
-
-	setSelected "export-format", "Internet banking text/spreadsheet (.CSV)"
-	click "export-statement-form:btnQuickTransferRetail"
-
-	puts "done"
-end
-
-def enterDate element, day, month, year
-	el = @driver.find_element(:id => element)
-	el.send_keys
-	el.send_keys(day)
-	el.send_keys(month)
-	el.send_keys(year)
-	raise "Input failed!" if el.attribute("value") != "#{day}/#{month}/#{year}"
 end
