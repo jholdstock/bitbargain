@@ -40,6 +40,7 @@ def enterMemorableInfo
 end
 
 def openAccount index
+	@driver.get "https://secure.lloydsbank.co.uk/personal/a/account_details_ress"
 	account = @driver.find_element :id => "lnkAccName_des-m-sat-xx-#{index}"
 	accountName = account.text
 	click "lnkAccName_des-m-sat-xx-#{index}"
@@ -120,6 +121,7 @@ def checkCheapest
 	rowData.each do |data|
 		cheapest = data[:unit] if cheapest == 0
 		cheap_sellers.push(data[:seller].downcase) if cheapest == data[:unit]
+		sleep 0.01
 		puts "#{data[:unit].gsub(" ","")} - #{data[:seller]}"
 	end
 
@@ -152,7 +154,12 @@ def repeat
 		sleep 2
 		if (waited >= wait_for)
 			print "Refreshing now..."
-			yield
+			begin
+				yield
+			rescue Exception => e
+				puts "Error"
+				puts e
+			end
 			waited = 0
 			next
 		else
@@ -171,7 +178,6 @@ begin
 	
 		
 	repeat do
-		
 		printTransactions
 		checkCheapest
 	end
