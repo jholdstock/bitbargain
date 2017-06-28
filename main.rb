@@ -146,20 +146,14 @@ def clearScreen
 	system "clear" or system "cls"
 end
 
-def repeat 
-	wait_for = 5
+def countdown wait_for 
 	waited = 0
 	yield
 	loop do
 		sleep 2
 		if (waited >= wait_for)
 			print "Refreshing now..."
-			begin
-				yield
-			rescue Exception => e
-				puts "Error"
-				puts e
-			end
+			yield
 			waited = 0
 			next
 		else
@@ -169,19 +163,24 @@ def repeat
 	end
 end
 
-begin
-	clearScreen
-	@driver2 = createDriver
-	@driver = createDriver
-	login
-	enterMemorableInfo
-	
+loop do
+	begin
+		@driver2 = createDriver
+		@driver = createDriver
+		login
+		enterMemorableInfo
 		
-	repeat do
-		printTransactions
-		checkCheapest
+			
+		clearScreen
+		countdown 5 do
+			printTransactions
+			checkCheapest
+		end
+	rescue
+		clearScreen
+		puts "An error occurred. Restarting script...".white.on_red
+	ensure
+		@driver.quit if @driver != nil
+		@driver2.quit if @driver2 != nil
 	end
-ensure
-	@driver.quit if @driver != nil
-	@driver2.quit if @driver2 != nil
 end
