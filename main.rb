@@ -92,10 +92,11 @@ def printTransactions
 end
 
 def checkCheapest
+	cheapestCount = 15
 	puts ""
-	puts "Cheapest BitBargain sellers:"
+	puts "#{cheapestCount} Cheapest BitBargain sellers:"
 	@driver2.get 'https://bitbargain.co.uk/buy'
-	rowElements = @driver2.find_elements :css => "div.container table.table-striped > tbody > tr:nth-child(-n+10)"
+	rowElements = @driver2.find_elements :css => "div.container table.table-striped > tbody > tr:nth-child(-n+#{cheapestCount})"
 
 	rowData = []
 	rowElements.each do |row|
@@ -116,27 +117,35 @@ def checkCheapest
 	end
 
 	puts ""
-	cheapest = 0
-	cheap_sellers = []
+	lowest_price = 0
+	lowest_price_sellers = []
+	all_sellers = []
 	rowData.each do |data|
-		cheapest = data[:unit] if cheapest == 0
-		cheap_sellers.push(data[:seller].downcase) if cheapest == data[:unit]
+		lowest_price = data[:unit] if lowest_price == 0
+		lowest_price_sellers.push(data[:seller].downcase) if lowest_price == data[:unit]
+		all_sellers.push(data[:seller].downcase)
 		sleep 0.01
 		puts "#{data[:unit].gsub(" ","")} - #{data[:seller]}"
 	end
 
 	puts ""
 
-	cheap_sellers.uniq!
+	lowest_price_sellers.uniq!
 
-	if cheap_sellers.include? @bitbargain_username.downcase
-		if cheap_sellers.size == 1
+	if lowest_price_sellers.include? @bitbargain_username.downcase
+		if lowest_price_sellers.size == 1
 			puts "You are the cheapest!".white.on_green
 		else
 			puts "You are joint cheapest".white.on_yellow
 		end
 	else
 		puts "You are not the cheapest!".white.on_red
+		puts ""
+		if all_sellers.include? @bitbargain_username.downcase
+			puts "But you are in the top #{cheapestCount}".white.on_yellow
+		else
+			puts "You aren't even in the top #{cheapestCount}!".white.on_red
+		end
 	end
 
 	puts ""
