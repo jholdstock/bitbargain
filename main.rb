@@ -81,12 +81,11 @@ def printTransactions
 	rowVals = getRowsOnScreen
 	clearScreen
 	sleep 0.3
-	puts "Most recent bank deposits:"
-	
+	puts "Latest bank deposits:"
 	puts ""
 	rowVals.each do |row|
 		sleep 0.01
-		puts "Received  #{row[:money_in].ljust(8," ")}  from  '#{row[:name]}'"
+		puts " #{row[:money_in].ljust(8," ")} - #{row[:name]}"
 	end
 	@driver.find_element(:css=>"a.back-to-accounts-btn").click
 end
@@ -125,7 +124,7 @@ def checkCheapest
 		lowest_price_sellers.push(data[:seller].downcase) if lowest_price == data[:unit]
 		all_sellers.push(data[:seller].downcase)
 		sleep 0.01
-		puts "#{data[:unit].gsub(" ","")} - #{data[:seller]}"
+		puts " #{data[:unit].gsub(" ","")} - #{data[:seller]}"
 	end
 
 	puts ""
