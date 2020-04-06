@@ -48,6 +48,7 @@ def openAccount index
 end
 
 def getRowsOnScreen
+	sleep 1
 	table = @driver.find_element :css => "tbody.cwa-tbody"
 	rows = table.find_elements :css => "tr"
 
@@ -85,7 +86,7 @@ def printTransactions
 	puts ""
 	rowVals.each do |row|
 		sleep 0.01
-		puts " #{row[:money_in].ljust(8," ")} - #{row[:name]}"
+		puts " £#{row[:money_in].ljust(8," ")} - #{row[:name]}"
 	end
 	@driver.find_element(:css=>"a.back-to-accounts-btn").click
 end
@@ -177,8 +178,6 @@ loop do
 		@driver = createDriver
 		login
 		enterMemorableInfo
-		
-			
 		clearScreen
 		countdown 5 do
 			printTransactions
