@@ -59,8 +59,8 @@ def getRowsOnScreen
 		rowContent = {}
 		begin
 			rowContent = {
-				:date => rowElements[0].text,
-				:name => rowElements[1].text,
+				:date => rowElements[1].text.split("\n")[0],
+				:name => rowElements[1].text.split("\n")[1],
 				:xfer_type => rowElements[2].text,
 				:money_in => rowElements[3].text,
 				:money_out => rowElements[4].text,
