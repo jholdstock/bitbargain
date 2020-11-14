@@ -109,6 +109,7 @@ def checkCheapest
 				:minimum => cells[3].text,
 				:unit => cells[4].text,
 				:price => cells[5].text,
+				:action => cells[6].text,
 			}
 		rescue
 			next
@@ -121,6 +122,7 @@ def checkCheapest
 	lowest_price_sellers = []
 	all_sellers = []
 	rowData.each do |data|
+		next if data[:action].downcase == "offline"
 		lowest_price = data[:unit] if lowest_price == 0
 		lowest_price_sellers.push(data[:seller].downcase) if lowest_price == data[:unit]
 		all_sellers.push(data[:seller].downcase)
@@ -183,7 +185,9 @@ loop do
 			printTransactions
 			checkCheapest
 		end
-	rescue
+	rescue StandardError => e
+		# puts e.full_message(highlight: true, order: :top)
+		# break
 		clearScreen
 		puts "An error occurred. Restarting script...".white.on_red
 	ensure
